@@ -1,0 +1,23 @@
+{
+  "name": "musical-instrument-player",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "music_player.js",
+  "scripts": {
+    "start": "node music_player.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
+    "node-wav": "^0.0.2",
+    "fs-extra": "^11.1.1"
+  },
+  "keywords": [
+    "music",
+    "flute",
+    "audio",
+    "mp3"
+  ],
+  "author": "ZYP",
+  "license": "MIT"
+}

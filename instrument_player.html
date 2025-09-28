@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>C调竹笛</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1 {
+        color: white;
+        font-size: 3rem;
+        text-align: center;
+        margin: 20px 0 0 0;
+        font-weight: 400;
+        letter-spacing: 2px;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 800px;
+        margin-top: 20px;
+      }
+
+      .notes-row {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+      }
+
+      .note-button {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #a0aec0;
+        background: linear-gradient(135deg, #e2e8f0 0%, #a0aec0 100%);
+        color: #4a5568;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
+      }
+
+       .note-button:hover,
+       .note-button:active,
+       .note-button.pressed {
+         box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+         background: linear-gradient(135deg, #e2e8f0f1 0%, #cbd5e0 100%);
+         border-color: #a0aec0;
+         color: #4a5568;
+       }
+
+      .note-button .dot-top {
+        position: absolute;
+        top: 8px;
+        width: 4px;
+        height: 4px;
+        background: #4a5568;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+
+      .note-button .dot-bottom {
+        position: absolute;
+        bottom: 8px;
+        width: 4px;
+        height: 4px;
+        background: #4a5568;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+
+       .note-button:hover .dot-top,
+       .note-button:hover .dot-bottom,
+       .note-button:active .dot-top,
+       .note-button:active .dot-bottom,
+       .note-button.pressed .dot-top,
+       .note-button.pressed .dot-bottom {
+         background: #4a5568;
+       }
+
+      .input-section {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 25px 40px;
+        margin: 20px auto;
+        width: 800px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .input-section input, .input-section textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: 'Arial', sans-serif;
+        box-sizing: border-box;
+      }
+
+      .input-section textarea {
+        height: 120px;
+        resize: vertical;
+        font-family: 'Courier New', monospace;
+      }
+
+      .control-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .control-buttons button {
+        width: 100px;
+        height: 40px;
+        border: none;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+      }
+
+      #parseBtn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      #playBtn {
+        background: linear-gradient(135deg, #56ab2f 0%, #46cb9a 100%);
+      }
+
+      #pauseBtn {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      #stopBtn {
+        background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+      }
+
+      .control-buttons button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .control-buttons button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      #playbackStatus {
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: #4a5568;
+        margin-top: 10px;
+      }
+
+      .note-button.auto-play {
+        border: 3px solid #ff4444 !important;
+        animation: pulse 0.5s ease-in-out infinite alternate;
+        position: relative;
+      }
+
+      .note-button .duration-overlay {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ff4444;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+        z-index: 10;
+      }
+
+      .note-button .duration-overlay::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #ff4444;
+      }
+
+      @keyframes pulse {
+        from { box-shadow: 0 0 10px rgba(255, 68, 68, 0.5); }
+        to { box-shadow: 0 0 20px rgba(255, 68, 68, 0.8); }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎵 C调竹笛演奏 🎵</h1>
+
+    <div class="input-section">
+      <textarea id="sheetMusic" placeholder="请输入简谱数组，格式: [[音符, 八度, 时值（秒）, 是否连音], ...]&#10;示例：[['1', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['3', 'mid', 1.0, false]]"></textarea>
+      <div class="control-buttons">
+        <button id="parseBtn" onclick="parseSheetMusic()">解析简谱</button>
+        <button id="playBtn" onclick="startAutoPlay()" disabled>开始演奏</button>
+        <button id="pauseBtn" onclick="pauseAutoPlay()" disabled>暂停</button>
+        <button id="stopBtn" onclick="stopAutoPlay()" disabled>停止</button>
+      </div>
+      <div id="playbackStatus"></div>
+    </div>
+
+    <div class="container">
+      <!-- 高音区 -->
+      <div class="notes-row">
+        <button class="note-button" onclick="playNote('high', 1)">
+          <div class="dot-top"></div>
+          1
+        </button>
+        <button class="note-button" onclick="playNote('high', 2)">
+          <div class="dot-top"></div>
+          2
+        </button>
+        <button class="note-button" onclick="playNote('high', 3)">
+          <div class="dot-top"></div>
+          3
+        </button>
+        <button class="note-button" onclick="playNote('high', 4)">
+          <div class="dot-top"></div>
+          4
+        </button>
+        <button class="note-button" onclick="playNote('high', 5)">
+          <div class="dot-top"></div>
+          5
+        </button>
+        <button class="note-button" onclick="playNote('high', 6)">
+          <div class="dot-top"></div>
+          6
+        </button>
+        <button class="note-button" onclick="playNote('high', 7)">
+          <div class="dot-top"></div>
+          7
+        </button>
+      </div>
+
+      <!-- 中音区 -->
+      <div class="notes-row">
+        <button class="note-button" onclick="playNote('mid', 1)">1</button>
+        <button class="note-button" onclick="playNote('mid', 2)">2</button>
+        <button class="note-button" onclick="playNote('mid', 3)">3</button>
+        <button class="note-button" onclick="playNote('mid', 4)">4</button>
+        <button class="note-button" onclick="playNote('mid', 5)">5</button>
+        <button class="note-button" onclick="playNote('mid', 6)">6</button>
+        <button class="note-button" onclick="playNote('mid', 7)">7</button>
+      </div>
+
+      <!-- 低音区 -->
+      <div class="notes-row">
+        <button class="note-button" onclick="playNote('low', 1)">
+          1
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 2)">
+          2
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 3)">
+          3
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 4)">
+          4
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 5)">
+          5
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 6)">
+          6
+          <div class="dot-bottom"></div>
+        </button>
+        <button class="note-button" onclick="playNote('low', 7)">
+          7
+          <div class="dot-bottom"></div>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // 预加载音频文件
+      const audioCache = {};
+      let currentPlayingAudio = null;
+      let fadeOutTimeout = null;
+      let isPlaying = false;
+      let currentRange = null;
+      let currentNote = null;
+      let pressedKeys = new Set();
+
+      function preloadAudio() {
+        const ranges = ["high", "mid", "low"];
+        const notes = [1, 2, 3, 4, 5, 6, 7];
+
+        ranges.forEach((range) => {
+          audioCache[range] = {};
+          notes.forEach((note) => {
+            const audio = new Audio(`${range}/${note}.wav`);
+            audio.preload = "auto";
+            audio.loop = true; // 设置循环播放
+            audioCache[range][note] = audio;
+          });
+        });
+      }
+
+      function fadeOutAudio(audio, duration = 500) {
+        if (!audio) return;
+        
+        const startVolume = audio.volume;
+        const fadeStep = startVolume / (duration / 10);
+        
+        const fade = setInterval(() => {
+          if (audio.volume > fadeStep) {
+            audio.volume -= fadeStep;
+          } else {
+            audio.volume = 0;
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1; // 重置音量
+            clearInterval(fade);
+          }
+        }, 10);
+      }
+
+      function startNote(range, note) {
+        // 如果已经在播放相同的音符，直接返回
+        if (isPlaying && currentRange === range && currentNote === note) {
+          return;
+        }
+
+        // 停止当前播放的音频
+        stopCurrentNote();
+
+        try {
+          const audio = audioCache[range][note];
+          if (audio) {
+            audio.currentTime = 0;
+            audio.volume = 1;
+            currentPlayingAudio = audio;
+            currentRange = range;
+            currentNote = note;
+            isPlaying = true;
+
+            audio.play().catch((error) => {
+              console.error("播放音频失败:", error);
+              // 备用方案
+              const fallbackAudio = new Audio(`${range}/${note}.wav`);
+              fallbackAudio.loop = true;
+              fallbackAudio.play().catch((fallbackError) => {
+                console.error("备用音频播放也失败:", fallbackError);
+              });
+              currentPlayingAudio = fallbackAudio;
+            });
+          } else {
+            console.error("音频文件未找到:", `${range}/${note}.wav`);
+          }
+        } catch (error) {
+          console.error("播放音频时出错:", error);
+        }
+      }
+
+      function stopCurrentNote() {
+        if (currentPlayingAudio && isPlaying) {
+          // 清除之前的淡出定时器
+          if (fadeOutTimeout) {
+            clearTimeout(fadeOutTimeout);
+          }
+          
+          fadeOutAudio(currentPlayingAudio, 500);
+          currentPlayingAudio = null;
+          currentRange = null;
+          currentNote = null;
+          isPlaying = false;
+        }
+      }
+
+      function playNote(range, note) {
+        startNote(range, note);
+      }
+
+      function getButtonByNote(range, note) {
+        const buttons = document.querySelectorAll(".note-button");
+        for (let button of buttons) {
+          if (button.onclick && button.onclick.toString().includes(`'${range}', ${note}`)) {
+            return button;
+          }
+        }
+        return null;
+      }
+
+      // 页面加载完成后预加载音频
+      window.addEventListener("load", preloadAudio);
+
+      // 鼠标事件处理
+      document.querySelectorAll(".note-button").forEach((button) => {
+        button.addEventListener("mousedown", function(event) {
+          event.preventDefault();
+          const onclickStr = this.onclick.toString();
+          const match = onclickStr.match(/playNote\('(\w+)', (\d+)\)/);
+          if (match) {
+            const range = match[1];
+            const note = parseInt(match[2]);
+            startNote(range, note);
+            this.classList.add("pressed");
+          }
+        });
+
+        button.addEventListener("mouseup", function() {
+          stopCurrentNote();
+          this.classList.remove("pressed");
+        });
+
+        button.addEventListener("mouseleave", function() {
+          stopCurrentNote();
+          this.classList.remove("pressed");
+        });
+      });
+
+      // 键盘支持
+      document.addEventListener("keydown", function (event) {
+        const keyMap = {
+          1: { range: "mid", note: 1 },
+          2: { range: "mid", note: 2 },
+          3: { range: "mid", note: 3 },
+          4: { range: "mid", note: 4 },
+          5: { range: "mid", note: 5 },
+          6: { range: "mid", note: 6 },
+          7: { range: "mid", note: 7 },
+          q: { range: "high", note: 1 },
+          w: { range: "high", note: 2 },
+          e: { range: "high", note: 3 },
+          r: { range: "high", note: 4 },
+          t: { range: "high", note: 5 },
+          y: { range: "high", note: 6 },
+          u: { range: "high", note: 7 },
+          a: { range: "low", note: 1 },
+          s: { range: "low", note: 2 },
+          d: { range: "low", note: 3 },
+          f: { range: "low", note: 4 },
+          g: { range: "low", note: 5 },
+          h: { range: "low", note: 6 },
+          j: { range: "low", note: 7 },
+        };
+
+        const key = event.key.toLowerCase();
+        const mapping = keyMap[key];
+        
+        if (mapping && !pressedKeys.has(key)) {
+          event.preventDefault();
+          pressedKeys.add(key);
+          startNote(mapping.range, mapping.note);
+
+          // 添加视觉反馈
+          const button = getButtonByNote(mapping.range, mapping.note);
+          if (button) {
+            button.classList.add("pressed");
+          }
+        }
+      });
+
+      document.addEventListener("keyup", function (event) {
+        const key = event.key.toLowerCase();
+        const keyMap = {
+          1: { range: "mid", note: 1 },
+          2: { range: "mid", note: 2 },
+          3: { range: "mid", note: 3 },
+          4: { range: "mid", note: 4 },
+          5: { range: "mid", note: 5 },
+          6: { range: "mid", note: 6 },
+          7: { range: "mid", note: 7 },
+          q: { range: "high", note: 1 },
+          w: { range: "high", note: 2 },
+          e: { range: "high", note: 3 },
+          r: { range: "high", note: 4 },
+          t: { range: "high", note: 5 },
+          y: { range: "high", note: 6 },
+          u: { range: "high", note: 7 },
+          a: { range: "low", note: 1 },
+          s: { range: "low", note: 2 },
+          d: { range: "low", note: 3 },
+          f: { range: "low", note: 4 },
+          g: { range: "low", note: 5 },
+          h: { range: "low", note: 6 },
+          j: { range: "low", note: 7 },
+        };
+
+        const mapping = keyMap[key];
+        if (mapping && pressedKeys.has(key)) {
+          pressedKeys.delete(key);
+          
+          // 只有当松开的键对应当前播放的音符时才停止
+          if (currentRange === mapping.range && currentNote === mapping.note) {
+            stopCurrentNote();
+          }
+
+          // 移除视觉反馈
+          const button = getButtonByNote(mapping.range, mapping.note);
+          if (button) {
+            button.classList.remove("pressed");
+          }
+        }
+      });
+
+      // 防止页面失去焦点时音频继续播放
+      window.addEventListener("blur", function() {
+        stopCurrentNote();
+        pressedKeys.clear();
+        document.querySelectorAll(".note-button").forEach(button => {
+          button.classList.remove("pressed");
+        });
+      });
+
+      // ========== 简谱解析和自动演奏功能 ==========
+      let parsedSheetMusic = [];
+      let autoPlayInterval = null;
+      let currentNoteIndex = 0;
+      let isAutoPlaying = false;
+      let isPaused = false;
+      let currentAutoPlayTimeout = null;
+
+      function parseSheetMusic() {
+        const input = document.getElementById('sheetMusic').value.trim();
+        const statusDiv = document.getElementById('playbackStatus');
+        
+        if (!input) {
+          statusDiv.textContent = '请输入简谱数组';
+          statusDiv.style.color = '#ff4444';
+          return;
+        }
+
+        try {
+          // 尝试解析JSON数组
+          parsedSheetMusic = JSON.parse(input);
+          
+          // 验证数据格式
+          if (!Array.isArray(parsedSheetMusic)) {
+            throw new Error('输入必须是数组格式');
+          }
+
+          for (let i = 0; i < parsedSheetMusic.length; i++) {
+            const note = parsedSheetMusic[i];
+            if (!Array.isArray(note) || note.length !== 4) {
+              throw new Error(`第${i+1}个音符格式错误，应为[音符, 八度, 时值, 连音]`);
+            }
+            
+            const [noteName, octave, duration, isSlur] = note;
+            if (noteName !== 'rest' && !['1','2','3','4','5','6','7'].includes(noteName)) {
+              throw new Error(`第${i+1}个音符"${noteName}"无效，应为1-7或rest`);
+            }
+            
+            if (noteName !== 'rest' && !['low', 'mid', 'high'].includes(octave)) {
+              throw new Error(`第${i+1}个音符八度"${octave}"无效，应为low/mid/high`);
+            }
+            
+            if (typeof duration !== 'number' || duration <= 0) {
+              throw new Error(`第${i+1}个音符时值无效，应为正数`);
+            }
+          }
+
+          statusDiv.textContent = `简谱解析成功！共${parsedSheetMusic.length}个音符`;
+          statusDiv.style.color = '#56ab2f';
+          
+          // 启用播放按钮
+          document.getElementById('playBtn').disabled = false;
+          
+        } catch (error) {
+          statusDiv.textContent = `解析错误: ${error.message}`;
+          statusDiv.style.color = '#ff4444';
+          parsedSheetMusic = [];
+          document.getElementById('playBtn').disabled = true;
+        }
+      }
+
+      function startAutoPlay() {
+        if (parsedSheetMusic.length === 0) {
+          document.getElementById('playbackStatus').textContent = '请先解析简谱';
+          return;
+        }
+
+        isAutoPlaying = true;
+        isPaused = false;
+        currentNoteIndex = 0;
+        
+        // 更新按钮状态
+        document.getElementById('playBtn').disabled = true;
+        document.getElementById('pauseBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = false;
+        
+        playNextNote();
+      }
+
+      function pauseAutoPlay() {
+        if (!isAutoPlaying) return;
+        
+        isPaused = !isPaused;
+        
+        if (isPaused) {
+          // 暂停
+          if (currentAutoPlayTimeout) {
+            clearTimeout(currentAutoPlayTimeout);
+            currentAutoPlayTimeout = null;
+          }
+          stopCurrentNote();
+          clearAllVisualHints();
+          document.getElementById('pauseBtn').textContent = '继续';
+          document.getElementById('playbackStatus').textContent = '演奏已暂停';
+        } else {
+          // 继续
+          document.getElementById('pauseBtn').textContent = '暂停';
+          playNextNote();
+        }
+      }
+
+      function stopAutoPlay() {
+        isAutoPlaying = false;
+        isPaused = false;
+        currentNoteIndex = 0;
+        
+        if (currentAutoPlayTimeout) {
+          clearTimeout(currentAutoPlayTimeout);
+          currentAutoPlayTimeout = null;
+        }
+        
+        stopCurrentNote();
+        clearAllVisualHints();
+        
+        // 更新按钮状态
+        document.getElementById('playBtn').disabled = false;
+        document.getElementById('pauseBtn').disabled = true;
+        document.getElementById('pauseBtn').textContent = '暂停';
+        document.getElementById('stopBtn').disabled = true;
+        
+        document.getElementById('playbackStatus').textContent = '演奏已停止';
+      }
+
+      function playNextNote() {
+        if (!isAutoPlaying || isPaused || currentNoteIndex >= parsedSheetMusic.length) {
+          if (currentNoteIndex >= parsedSheetMusic.length) {
+            // 演奏完成
+            stopAutoPlay();
+            document.getElementById('playbackStatus').textContent = '演奏完成！';
+          }
+          return;
+        }
+
+        const [noteName, octave, duration, isSlur] = parsedSheetMusic[currentNoteIndex];
+        
+        // 更新状态显示
+        document.getElementById('playbackStatus').textContent = 
+          `演奏中... (${currentNoteIndex + 1}/${parsedSheetMusic.length})`;
+
+        if (noteName === 'rest') {
+          // 休止符，不播放音频但仍需等待时间
+          currentAutoPlayTimeout = setTimeout(() => {
+            currentNoteIndex++;
+            playNextNote();
+          }, duration * 1000);
+        } else {
+          // 找到对应的按钮并添加视觉提示
+          const button = getButtonByNote(octave, parseInt(noteName));
+          if (button) {
+            showNoteHint(button, duration);
+            
+            // 播放音符
+            startNote(octave, parseInt(noteName));
+            
+            // 设置定时器播放下一个音符
+            currentAutoPlayTimeout = setTimeout(() => {
+              if (!isSlur) {
+                stopCurrentNote();
+              }
+              removeNoteHint(button);
+              currentNoteIndex++;
+              playNextNote();
+            }, duration * 1000);
+          } else {
+            console.error(`找不到音符 ${noteName}(${octave}) 对应的按钮`);
+            currentNoteIndex++;
+            playNextNote();
+          }
+        }
+      }
+
+      function showNoteHint(button, duration) {
+        // 添加红色边框和脉冲动画
+        button.classList.add('auto-play');
+        
+        // 创建时间显示覆盖层
+        const overlay = document.createElement('div');
+        overlay.className = 'duration-overlay';
+        overlay.textContent = `${duration}s`;
+        button.appendChild(overlay);
+      }
+
+      function removeNoteHint(button) {
+        button.classList.remove('auto-play');
+        const overlay = button.querySelector('.duration-overlay');
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+
+      function clearAllVisualHints() {
+        document.querySelectorAll('.note-button').forEach(button => {
+          removeNoteHint(button);
+        });
+      }
+
+      // 添加默认示例
+      window.addEventListener('load', function() {
+        const defaultExample = `[
+          ["1", "mid", 0.5, false],
+          ["2", "mid", 0.5, false], 
+          ["3", "mid", 0.5, false],
+          ["4", "mid", 0.5, false],
+          ["5", "mid", 1.0, false],
+          ["rest", "", 0.5, false],
+          ["5", "mid", 0.5, false],
+          ["6", "mid", 0.5, false],
+          ["7", "mid", 1.0, false]
+        ]`;
+        document.getElementById('sheetMusic').value = defaultExample;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>竹笛多声部播放测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .octave-group {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .octave-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .notes-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .note-button {
+            padding: 10px 15px;
+            background: linear-gradient(145deg, #e6e6e6, #ffffff);
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 60px;
+            text-align: center;
+        }
+        .note-button:hover {
+            background: linear-gradient(145deg, #d4d4d4, #e6e6e6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .note-button.playing {
+            background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-color: #ff4757;
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .control-button {
+            padding: 12px 25px;
+            margin: 0 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .stop-all {
+            background: #ff4757;
+            color: white;
+        }
+        .stop-all:hover {
+            background: #ff3742;
+            transform: translateY(-2px);
+        }
+        .test-chord {
+            background: #5f27cd;
+            color: white;
+        }
+        .test-chord:hover {
+            background: #4c1a9e;
+            transform: translateY(-2px);
+        }
+        .info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .volume-control {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .volume-slider {
+            width: 200px;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎋 竹笛多声部播放测试器</h1>
+        
+        <div class="info">
+            <strong>使用说明：</strong><br>
+            • 点击音符按钮开始播放，再次点击停止<br>
+            • 可以同时点击多个音符测试多声部效果<br>
+            • 建议同时播放的音符数量不超过4-6个<br>
+            • 使用测试和弦按钮快速试听优化效果
+        </div>
+
+        <div class="volume-control">
+            <label for="volumeSlider">总音量: </label>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+            <span id="volumeValue">50%</span>
+        </div>
+
+        <div class="controls">
+            <button class="control-button stop-all" onclick="stopAllNotes()">停止所有</button>
+            <button class="control-button test-chord" onclick="playTestChord()">测试和弦 (C大三和弦)</button>
+        </div>
+
+        <div class="octave-group">
+            <div class="octave-title">高音区 (High)</div>
+            <div class="notes-row">
+                <div class="note-button" data-octave="high" data-note="1" onclick="toggleNote(this)">高音1 (do)</div>
+                <div class="note-button" data-octave="high" data-note="2" onclick="toggleNote(this)">高音2 (re)</div>
+                <div class="note-button" data-octave="high" data-note="3" onclick="toggleNote(this)">高音3 (mi)</div>
+                <div class="note-button" data-octave="high" data-note="4" onclick="toggleNote(this)">高音4 (fa)</div>
+                <div class="note-button" data-octave="high" data-note="5" onclick="toggleNote(this)">高音5 (sol)</div>
+                <div class="note-button" data-octave="high" data-note="6" onclick="toggleNote(this)">高音6 (la)</div>
+                <div class="note-button" data-octave="high" data-note="7" onclick="toggleNote(this)">高音7 (si)</div>
+            </div>
+        </div>
+
+        <div class="octave-group">
+            <div class="octave-title">中音区 (Mid)</div>
+            <div class="notes-row">
+                <div class="note-button" data-octave="mid" data-note="1" onclick="toggleNote(this)">中音1 (do)</div>
+                <div class="note-button" data-octave="mid" data-note="2" onclick="toggleNote(this)">中音2 (re)</div>
+                <div class="note-button" data-octave="mid" data-note="3" onclick="toggleNote(this)">中音3 (mi)</div>
+                <div class="note-button" data-octave="mid" data-note="4" onclick="toggleNote(this)">中音4 (fa)</div>
+                <div class="note-button" data-octave="mid" data-note="5" onclick="toggleNote(this)">中音5 (sol)</div>
+                <div class="note-button" data-octave="mid" data-note="6" onclick="toggleNote(this)">中音6 (la)</div>
+                <div class="note-button" data-octave="mid" data-note="7" onclick="toggleNote(this)">中音7 (si)</div>
+            </div>
+        </div>
+
+        <div class="octave-group">
+            <div class="octave-title">低音区 (Low)</div>
+            <div class="notes-row">
+                <div class="note-button" data-octave="low" data-note="1" onclick="toggleNote(this)">低音1 (do)</div>
+                <div class="note-button" data-octave="low" data-note="2" onclick="toggleNote(this)">低音2 (re)</div>
+                <div class="note-button" data-octave="low" data-note="3" onclick="toggleNote(this)">低音3 (mi)</div>
+                <div class="note-button" data-octave="low" data-note="4" onclick="toggleNote(this)">低音4 (fa)</div>
+                <div class="note-button" data-octave="low" data-note="5" onclick="toggleNote(this)">低音5 (sol)</div>
+                <div class="note-button" data-octave="low" data-note="6" onclick="toggleNote(this)">低音6 (la)</div>
+                <div class="note-button" data-octave="low" data-note="7" onclick="toggleNote(this)">低音7 (si)</div>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>优化说明：</strong><br>
+            本版本针对多声部播放进行了以下优化：<br>
+            • 降低了单音符音量，为多声部预留动态范围<br>
+            • 减弱了谐波强度，避免频率冲突<br>
+            • 添加了软限制器，防止削波失真<br>
+            • 优化了颤音和气音效果
+        </div>
+    </div>
+
+    <script>
+        // 存储当前播放的音频对象
+        let playingAudios = new Map();
+        
+        // 音量控制
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        
+        volumeSlider.addEventListener('input', function() {
+            const volume = this.value / 100;
+            volumeValue.textContent = this.value + '%';
+            
+            // 更新所有正在播放的音频音量
+            playingAudios.forEach(audio => {
+                audio.volume = volume;
+            });
+        });
+
+        function toggleNote(button) {
+            const octave = button.dataset.octave;
+            const note = button.dataset.note;
+            const audioKey = `${octave}-${note}`;
+            
+            if (playingAudios.has(audioKey)) {
+                // 停止播放
+                stopNote(button, audioKey);
+            } else {
+                // 开始播放
+                playNote(button, octave, note, audioKey);
+            }
+        }
+
+        function playNote(button, octave, note, audioKey) {
+            try {
+                const audio = new Audio(`${octave}/${note}.wav`);
+                audio.volume = volumeSlider.value / 100;
+                audio.loop = true; // 循环播放以便测试多声部
+                
+                audio.onended = () => {
+                    stopNote(button, audioKey);
+                };
+                
+                audio.onerror = () => {
+                    alert(`无法加载音频文件: ${octave}/${note}.wav`);
+                    button.classList.remove('playing');
+                };
+                
+                audio.play().then(() => {
+                    button.classList.add('playing');
+                    playingAudios.set(audioKey, audio);
+                }).catch(error => {
+                    console.error('播放失败:', error);
+                    alert('播放失败，请检查音频文件是否存在');
+                });
+                
+            } catch (error) {
+                console.error('音频播放错误:', error);
+                alert('音频播放失败');
+            }
+        }
+
+        function stopNote(button, audioKey) {
+            if (playingAudios.has(audioKey)) {
+                const audio = playingAudios.get(audioKey);
+                audio.pause();
+                audio.currentTime = 0;
+                playingAudios.delete(audioKey);
+            }
+            button.classList.remove('playing');
+        }
+
+        function stopAllNotes() {
+            playingAudios.forEach((audio, key) => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            playingAudios.clear();
+            
+            // 移除所有按钮的播放状态
+            document.querySelectorAll('.note-button.playing').forEach(button => {
+                button.classList.remove('playing');
+            });
+        }
+
+        function playTestChord() {
+            // 先停止所有正在播放的音符
+            stopAllNotes();
+            
+            // 播放C大三和弦：中音1(C), 中音3(E), 中音5(G)
+            setTimeout(() => {
+                const chordNotes = [
+                    { octave: 'mid', note: '1' },
+                    { octave: 'mid', note: '3' },
+                    { octave: 'mid', note: '5' }
+                ];
+                
+                chordNotes.forEach(({octave, note}) => {
+                    const button = document.querySelector(`[data-octave="${octave}"][data-note="${note}"]`);
+                    if (button) {
+                        toggleNote(button);
+                    }
+                });
+            }, 500);
+        }
+
+        // 页面加载完成提示
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('竹笛多声部测试器已加载');
+            console.log('当前音量设置:', volumeSlider.value + '%');
+        });
+    </script>
+</body>
+</html>
