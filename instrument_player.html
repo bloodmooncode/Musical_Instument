@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -61,14 +61,14 @@
         box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
       }
 
-       .note-button:hover,
-       .note-button:active,
-       .note-button.pressed {
-         box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
-         background: linear-gradient(135deg, #e2e8f0f1 0%, #cbd5e0 100%);
-         border-color: #a0aec0;
-         color: #4a5568;
-       }
+      .note-button:hover,
+      .note-button:active,
+      .note-button.pressed {
+        box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+        background: linear-gradient(135deg, #e2e8f0f1 0%, #cbd5e0 100%);
+        border-color: #a0aec0;
+        color: #4a5568;
+      }
 
       .note-button .dot-top {
         position: absolute;
@@ -90,14 +90,14 @@
         transition: background-color 0.3s ease;
       }
 
-       .note-button:hover .dot-top,
-       .note-button:hover .dot-bottom,
-       .note-button:active .dot-top,
-       .note-button:active .dot-bottom,
-       .note-button.pressed .dot-top,
-       .note-button.pressed .dot-bottom {
-         background: #4a5568;
-       }
+      .note-button:hover .dot-top,
+      .note-button:hover .dot-bottom,
+      .note-button:active .dot-top,
+      .note-button:active .dot-bottom,
+      .note-button.pressed .dot-top,
+      .note-button.pressed .dot-bottom {
+        background: #4a5568;
+      }
 
       .input-section {
         background: rgba(255, 255, 255, 0.9);
@@ -108,21 +108,22 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       }
 
-      .input-section input, .input-section textarea {
+      .input-section input,
+      .input-section textarea {
         width: 100%;
         padding: 12px;
         margin: 8px 0;
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         font-size: 14px;
-        font-family: 'Arial', sans-serif;
+        font-family: "Arial", sans-serif;
         box-sizing: border-box;
       }
 
       .input-section textarea {
         height: 120px;
         resize: vertical;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
       }
 
       .control-buttons {
@@ -202,7 +203,7 @@
       }
 
       .note-button .duration-overlay::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 100%;
         left: 50%;
@@ -212,8 +213,12 @@
       }
 
       @keyframes pulse {
-        from { box-shadow: 0 0 10px rgba(255, 68, 68, 0.5); }
-        to { box-shadow: 0 0 20px rgba(255, 68, 68, 0.8); }
+        from {
+          box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+        to {
+          box-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
+        }
       }
     </style>
   </head>
@@ -322,9 +327,9 @@
         const ranges = ["high", "mid", "low"];
         const notes = [1, 2, 3, 4, 5, 6, 7];
 
-        ranges.forEach((range) => {
+        ranges.forEach(range => {
           audioCache[range] = {};
-          notes.forEach((note) => {
+          notes.forEach(note => {
             const audio = new Audio(`${range}/${note}.wav`);
             audio.preload = "auto";
             audio.loop = true; // 设置循环播放
@@ -335,10 +340,10 @@
 
       function fadeOutAudio(audio, duration = 500) {
         if (!audio) return;
-        
+
         const startVolume = audio.volume;
         const fadeStep = startVolume / (duration / 10);
-        
+
         const fade = setInterval(() => {
           if (audio.volume > fadeStep) {
             audio.volume -= fadeStep;
@@ -371,12 +376,12 @@
             currentNote = note;
             isPlaying = true;
 
-            audio.play().catch((error) => {
+            audio.play().catch(error => {
               console.error("播放音频失败:", error);
               // 备用方案
               const fallbackAudio = new Audio(`${range}/${note}.wav`);
               fallbackAudio.loop = true;
-              fallbackAudio.play().catch((fallbackError) => {
+              fallbackAudio.play().catch(fallbackError => {
                 console.error("备用音频播放也失败:", fallbackError);
               });
               currentPlayingAudio = fallbackAudio;
@@ -395,7 +400,7 @@
           if (fadeOutTimeout) {
             clearTimeout(fadeOutTimeout);
           }
-          
+
           fadeOutAudio(currentPlayingAudio, 500);
           currentPlayingAudio = null;
           currentRange = null;
@@ -422,8 +427,8 @@
       window.addEventListener("load", preloadAudio);
 
       // 鼠标事件处理
-      document.querySelectorAll(".note-button").forEach((button) => {
-        button.addEventListener("mousedown", function(event) {
+      document.querySelectorAll(".note-button").forEach(button => {
+        button.addEventListener("mousedown", function (event) {
           event.preventDefault();
           const onclickStr = this.onclick.toString();
           const match = onclickStr.match(/playNote\('(\w+)', (\d+)\)/);
@@ -435,12 +440,12 @@
           }
         });
 
-        button.addEventListener("mouseup", function() {
+        button.addEventListener("mouseup", function () {
           stopCurrentNote();
           this.classList.remove("pressed");
         });
 
-        button.addEventListener("mouseleave", function() {
+        button.addEventListener("mouseleave", function () {
           stopCurrentNote();
           this.classList.remove("pressed");
         });
@@ -474,7 +479,7 @@
 
         const key = event.key.toLowerCase();
         const mapping = keyMap[key];
-        
+
         if (mapping && !pressedKeys.has(key)) {
           event.preventDefault();
           pressedKeys.add(key);
@@ -517,7 +522,7 @@
         const mapping = keyMap[key];
         if (mapping && pressedKeys.has(key)) {
           pressedKeys.delete(key);
-          
+
           // 只有当松开的键对应当前播放的音符时才停止
           if (currentRange === mapping.range && currentNote === mapping.note) {
             stopCurrentNote();
@@ -532,7 +537,7 @@
       });
 
       // 防止页面失去焦点时音频继续播放
-      window.addEventListener("blur", function() {
+      window.addEventListener("blur", function () {
         stopCurrentNote();
         pressedKeys.clear();
         document.querySelectorAll(".note-button").forEach(button => {
@@ -549,81 +554,79 @@
       let currentAutoPlayTimeout = null;
 
       function parseSheetMusic() {
-        const input = document.getElementById('sheetMusic').value.trim();
-        const statusDiv = document.getElementById('playbackStatus');
-        
+        const input = document.getElementById("sheetMusic").value.trim();
+        const statusDiv = document.getElementById("playbackStatus");
+
         if (!input) {
-          statusDiv.textContent = '请输入简谱数组';
-          statusDiv.style.color = '#ff4444';
+          statusDiv.textContent = "请输入简谱数组";
+          statusDiv.style.color = "#ff4444";
           return;
         }
 
         try {
           // 尝试解析JSON数组
           parsedSheetMusic = JSON.parse(input);
-          
           // 验证数据格式
           if (!Array.isArray(parsedSheetMusic)) {
-            throw new Error('输入必须是数组格式');
+            throw new Error("输入必须是数组格式");
           }
 
           for (let i = 0; i < parsedSheetMusic.length; i++) {
             const note = parsedSheetMusic[i];
             if (!Array.isArray(note) || note.length !== 4) {
-              throw new Error(`第${i+1}个音符格式错误，应为[音符, 八度, 时值, 连音]`);
+              throw new Error(`第${i + 1}个音符格式错误，应为[音符, 八度, 时值, 连音]`);
             }
-            
+
             const [noteName, octave, duration, isSlur] = note;
-            if (noteName !== 'rest' && !['1','2','3','4','5','6','7'].includes(noteName)) {
-              throw new Error(`第${i+1}个音符"${noteName}"无效，应为1-7或rest`);
+            if (noteName !== "rest" && !["1", "2", "3", "4", "5", "6", "7"].includes(noteName)) {
+              throw new Error(`第${i + 1}个音符"${noteName}"无效，应为1-7或rest`);
             }
-            
-            if (noteName !== 'rest' && !['low', 'mid', 'high'].includes(octave)) {
-              throw new Error(`第${i+1}个音符八度"${octave}"无效，应为low/mid/high`);
+
+            if (noteName !== "rest" && !["low", "mid", "high"].includes(octave)) {
+              throw new Error(`第${i + 1}个音符八度"${octave}"无效，应为low/mid/high`);
             }
-            
-            if (typeof duration !== 'number' || duration <= 0) {
-              throw new Error(`第${i+1}个音符时值无效，应为正数`);
+
+            if (typeof duration !== "number" || duration <= 0) {
+              throw new Error(`第${i + 1}个音符时值无效，应为正数`);
             }
           }
 
           statusDiv.textContent = `简谱解析成功！共${parsedSheetMusic.length}个音符`;
-          statusDiv.style.color = '#56ab2f';
-          
+          statusDiv.style.color = "#56ab2f";
+
           // 启用播放按钮
-          document.getElementById('playBtn').disabled = false;
-          
+          document.getElementById("playBtn").disabled = false;
         } catch (error) {
           statusDiv.textContent = `解析错误: ${error.message}`;
-          statusDiv.style.color = '#ff4444';
+          statusDiv.style.color = "#ff4444";
           parsedSheetMusic = [];
-          document.getElementById('playBtn').disabled = true;
+          document.getElementById("playBtn").disabled = true;
         }
       }
 
       function startAutoPlay() {
         if (parsedSheetMusic.length === 0) {
-          document.getElementById('playbackStatus').textContent = '请先解析简谱';
+          document.getElementById("playbackStatus").textContent = "请先解析简谱";
           return;
         }
 
         isAutoPlaying = true;
         isPaused = false;
         currentNoteIndex = 0;
-        
+
         // 更新按钮状态
-        document.getElementById('playBtn').disabled = true;
-        document.getElementById('pauseBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = false;
-        
+        document.getElementById("playBtn").disabled = true;
+        document.getElementById("pauseBtn").disabled = false;
+        document.getElementById("stopBtn").disabled = false;
+
         playNextNote();
       }
 
       function pauseAutoPlay() {
         if (!isAutoPlaying) return;
-        
+
         isPaused = !isPaused;
-        
+
         if (isPaused) {
           // 暂停
           if (currentAutoPlayTimeout) {
@@ -632,11 +635,11 @@
           }
           stopCurrentNote();
           clearAllVisualHints();
-          document.getElementById('pauseBtn').textContent = '继续';
-          document.getElementById('playbackStatus').textContent = '演奏已暂停';
+          document.getElementById("pauseBtn").textContent = "继续";
+          document.getElementById("playbackStatus").textContent = "演奏已暂停";
         } else {
           // 继续
-          document.getElementById('pauseBtn').textContent = '暂停';
+          document.getElementById("pauseBtn").textContent = "暂停";
           playNextNote();
         }
       }
@@ -645,22 +648,22 @@
         isAutoPlaying = false;
         isPaused = false;
         currentNoteIndex = 0;
-        
+
         if (currentAutoPlayTimeout) {
           clearTimeout(currentAutoPlayTimeout);
           currentAutoPlayTimeout = null;
         }
-        
+
         stopCurrentNote();
         clearAllVisualHints();
-        
+
         // 更新按钮状态
-        document.getElementById('playBtn').disabled = false;
-        document.getElementById('pauseBtn').disabled = true;
-        document.getElementById('pauseBtn').textContent = '暂停';
-        document.getElementById('stopBtn').disabled = true;
-        
-        document.getElementById('playbackStatus').textContent = '演奏已停止';
+        document.getElementById("playBtn").disabled = false;
+        document.getElementById("pauseBtn").disabled = true;
+        document.getElementById("pauseBtn").textContent = "暂停";
+        document.getElementById("stopBtn").disabled = true;
+
+        document.getElementById("playbackStatus").textContent = "演奏已停止";
       }
 
       function playNextNote() {
@@ -668,18 +671,17 @@
           if (currentNoteIndex >= parsedSheetMusic.length) {
             // 演奏完成
             stopAutoPlay();
-            document.getElementById('playbackStatus').textContent = '演奏完成！';
+            document.getElementById("playbackStatus").textContent = "演奏完成！";
           }
           return;
         }
 
         const [noteName, octave, duration, isSlur] = parsedSheetMusic[currentNoteIndex];
-        
-        // 更新状态显示
-        document.getElementById('playbackStatus').textContent = 
-          `演奏中... (${currentNoteIndex + 1}/${parsedSheetMusic.length})`;
 
-        if (noteName === 'rest') {
+        // 更新状态显示
+        document.getElementById("playbackStatus").textContent = `演奏中... (${currentNoteIndex + 1}/${parsedSheetMusic.length})`;
+
+        if (noteName === "rest") {
           // 休止符，不播放音频但仍需等待时间
           currentAutoPlayTimeout = setTimeout(() => {
             currentNoteIndex++;
@@ -690,10 +692,10 @@
           const button = getButtonByNote(octave, parseInt(noteName));
           if (button) {
             showNoteHint(button, duration);
-            
+
             // 播放音符
             startNote(octave, parseInt(noteName));
-            
+
             // 设置定时器播放下一个音符
             currentAutoPlayTimeout = setTimeout(() => {
               if (!isSlur) {
@@ -713,31 +715,31 @@
 
       function showNoteHint(button, duration) {
         // 添加红色边框和脉冲动画
-        button.classList.add('auto-play');
-        
+        button.classList.add("auto-play");
+
         // 创建时间显示覆盖层
-        const overlay = document.createElement('div');
-        overlay.className = 'duration-overlay';
+        const overlay = document.createElement("div");
+        overlay.className = "duration-overlay";
         overlay.textContent = `${duration}s`;
         button.appendChild(overlay);
       }
 
       function removeNoteHint(button) {
-        button.classList.remove('auto-play');
-        const overlay = button.querySelector('.duration-overlay');
+        button.classList.remove("auto-play");
+        const overlay = button.querySelector(".duration-overlay");
         if (overlay) {
           overlay.remove();
         }
       }
 
       function clearAllVisualHints() {
-        document.querySelectorAll('.note-button').forEach(button => {
+        document.querySelectorAll(".note-button").forEach(button => {
           removeNoteHint(button);
         });
       }
 
       // 添加默认示例
-      window.addEventListener('load', function() {
+      window.addEventListener("load", function () {
         const defaultExample = `[
           ["1", "mid", 0.5, false],
           ["2", "mid", 0.5, false], 
@@ -749,7 +751,7 @@
           ["6", "mid", 0.5, false],
           ["7", "mid", 1.0, false]
         ]`;
-        document.getElementById('sheetMusic').value = defaultExample;
+        document.getElementById("sheetMusic").value = defaultExample;
       });
     </script>
   </body>

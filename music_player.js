@@ -42,14 +42,14 @@ class FluteMusicPlayer {
       // 根据简谱图片解析的《荒》曲谱
       // 格式: [音符, 八度, 时值（秒）, 是否连音]
       return [            
-        ['rest', '', 0.5, false], ['1', 'mid', 0.5, false], ['7', 'low', 0.5, false], ['1', 'mid', 0.5, false], ['6', 'low', 1.0, false], ['6', 'low', 0.5, false], ['6', 'mid', 0.5, false], 
-        ['5', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['4', 'mid', 0.5, false], ['3', 'mid', 0.5, false], ['3', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['2', 'mid', 0.25, true], ['3', 'mid', 0.25, false], 
-        ['1', 'mid', 1, false], ['1', 'mid', 0.5, false], ['7', 'low', 0.5, false], ['6', 'low', 1.0, false], ['6', 'low', 0.5, false], ['6', 'mid', 0.5, false], 
-        ['5', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['4', 'mid', 0.5, false], ['3', 'mid', 2.0, false], 
-        ['rest', '', 0.5, false], ['1', 'mid', 0.5, false], ['7', 'low', 0.5, false], ['1', 'mid', 0.5, false], ['6', 'low', 1.0, false], ['6', 'low', 0.5, false], ['6', 'mid', 0.5, false],
-        ['5', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['4', 'mid', 0.5, false], ['3', 'mid', 0.5, false], ['2', 'mid', 0.5, false], ['2', 'mid', 0.25, true], ['3', 'mid', 0.25, false],
-        ['1', 'mid', 1, false], ['1', 'mid', 0.5, false], ['7', 'low', 0.5, false], ['6', 'low', 1.0, false], ['6', 'low', 0.5, false], ['3', 'mid', 1, false], 
-        ['2', 'mid', 0.5, false], ['2', 'mid', 0.25, false], ['3', 'mid', 0.25, false], ['5', 'low', 0.5, false], ['6', 'low', 0.5, true], ['6', 'low', 1, false],   
+        ["rest", "", 0.5, false], ["1", "mid", 0.5, false], ["7", "low", 0.5, false], ["1", "mid", 0.5, false], ["6", "low", 1.0, false], ["6", "low", 0.5, false], ["6", "mid", 0.5, false], 
+        ["5", "mid", 0.5, false], ["2", "mid", 0.5, false], ["2", "mid", 0.5, false], ["4", "mid", 0.5, false], ["3", "mid", 0.5, false], ["3", "mid", 0.5, false], ["2", "mid", 0.5, false], ["2", "mid", 0.25, true], ["3", "mid", 0.25, false], 
+        ["1", "mid", 1, false], ["1", "mid", 0.5, false], ["7", "low", 0.5, false], ["6", "low", 1.0, false], ["6", "low", 0.5, false], ["6", "mid", 0.5, false], 
+        ["5", "mid", 0.5, false], ["2", "mid", 0.5, false], ["2", "mid", 0.5, false], ["4", "mid", 0.5, false], ["3", "mid", 2.0, false], 
+        ["rest", "", 0.5, false], ["1", "mid", 0.5, false], ["7", "low", 0.5, false], ["1", "mid", 0.5, false], ["6", "low", 1.0, false], ["6", "low", 0.5, false], ["6", "mid", 0.5, false],
+        ["5", "mid", 0.5, false], ["2", "mid", 0.5, false], ["2", "mid", 0.5, false], ["4", "mid", 0.5, false], ["3", "mid", 0.5, false], ["2", "mid", 0.5, false], ["2", "mid", 0.25, true], ["3", "mid", 0.25, false],
+        ["1", "mid", 1, false], ["1", "mid", 0.5, false], ["7", "low", 0.5, false], ["6", "low", 1.0, false], ["6", "low", 0.5, false], ["3", "mid", 1, false], 
+        ["2", "mid", 0.5, false], ["2", "mid", 0.25, false], ["3", "mid", 0.25, false], ["5", "low", 0.5, false], ["6", "low", 0.5, true], ["6", "low", 1, false]
       ];
     }
 
